@@ -1,0 +1,2 @@
+app:
+  server-id: ${SERVER_ID:SERVER-1}
