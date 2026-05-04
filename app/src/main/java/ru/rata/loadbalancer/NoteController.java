@@ -33,5 +33,6 @@ public class NoteController {
                 "server_id", serverId,
                 "note", note
         );
+        //TODO кароче есть беда что note и server_id прилетают постоянно в разном порядке, если будет возможность поправь
     }
 }
