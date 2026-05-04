@@ -39,7 +39,29 @@ services:
   web3:
     build: ./app
     environment:
-      SERVER_ID: ROLAN
+      SERVER_ID: SERVER-3
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web4:
+    build: ./app
+    environment:
+      SERVER_ID: POSHALKA-SERVER-4
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web5:
+    build: ./app
+    environment:
+      SERVER_ID: SERVER-5
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
@@ -57,6 +79,8 @@ services:
       - web1
       - web2
       - web3
+      - web4
+      - web5
 
 volumes:
   postgres_data:
