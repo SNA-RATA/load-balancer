@@ -1,5 +1,6 @@
 package ru.rata.loadbalancer;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -29,9 +30,10 @@ public class NoteController {
         if (note == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No notes found");
         }
-        return Map.of(
-                "server_id", serverId,
-                "note", note
-        );
+
+        Map<String, String> response = new LinkedHashMap<>();
+        response.put("server_id", serverId);
+        response.put("note", note);
+        return response;
     }
 }
