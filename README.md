@@ -38,3 +38,27 @@ PostgreSQL database, and Nginx distributes incoming requests between them.
 - Nginx
 - Docker Compose
 - GitHub Actions
+- Flutter Web
+
+## Flutter Web Client
+
+The `client/` directory contains a Flutter Web dashboard for demonstrating
+round-robin load balancing through Nginx. It sends `GET /` requests to a
+configurable Nginx base URL, displays the latest response, keeps an in-memory
+request history, tracks server hit counters, and exports the session as JSON or
+CSV.
+
+Run the backend stack first, then start the client:
+
+```sh
+cd client
+flutter pub get
+flutter run -d web-server --web-hostname 127.0.0.1 --web-port 8081
+```
+
+Open `http://127.0.0.1:8081` and set the Nginx base URL to `http://localhost`,
+`http://127.0.0.1`, or the host/IP where Nginx is exposed.
+
+The Nginx config includes a CORS response header so the Flutter development
+server can call `GET /` from a different port. The backend endpoint behavior is
+unchanged.
