@@ -36,7 +36,7 @@ class LoadBalancerController extends ChangeNotifier {
   int _successfulRequests = 0;
   int _latencyTotalMs = 0;
   Duration _pollingInterval = const Duration(seconds: 1);
-  String _baseUrl = 'http://localhost';
+  String _baseUrl = 'http://194.87.145.115';
   String? _baseUrlError;
   final List<RequestLogItem> _history = [];
   final Map<String, int> _serverHits = {};
