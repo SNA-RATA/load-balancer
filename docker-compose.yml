@@ -1,6 +1,33 @@
+x-web-common: &web-common
+  build: ./app
+  mem_limit: 120m
+  memswap_limit: 160m
+  pids_limit: 120
+  depends_on:
+    db:
+      condition: service_healthy
+  restart: unless-stopped
+
 services:
   db:
     image: postgres:15-alpine
+    mem_limit: 96m
+    memswap_limit: 160m
+    pids_limit: 80
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_buffers=16MB"
+      - "-c"
+      - "work_mem=512kB"
+      - "-c"
+      - "maintenance_work_mem=8MB"
+      - "-c"
+      - "effective_cache_size=64MB"
+      - "-c"
+      - "max_connections=60"
+      - "-c"
+      - "autovacuum=off"
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -13,64 +40,73 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    restart: unless-stopped
 
   web1:
-    build: ./app
+    <<: *web-common
     environment:
       SERVER_ID: SERVER-1
+      JAVA_TOOL_OPTIONS: "-Xms16m -Xmx48m -Xss256k -XX:MaxMetaspaceSize=48m -XX:ReservedCodeCacheSize=16m -XX:+UseSerialGC -XX:ActiveProcessorCount=1 -XX:TieredStopAtLevel=1 -Djava.security.egd=file:/dev/./urandom"
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-    depends_on:
-      db:
-        condition: service_healthy
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 2
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 0
+      SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 15000
 
   web2:
-    build: ./app
+    <<: *web-common
     environment:
       SERVER_ID: SERVER-2
+      JAVA_TOOL_OPTIONS: "-Xms16m -Xmx48m -Xss256k -XX:MaxMetaspaceSize=48m -XX:ReservedCodeCacheSize=16m -XX:+UseSerialGC -XX:ActiveProcessorCount=1 -XX:TieredStopAtLevel=1 -Djava.security.egd=file:/dev/./urandom"
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-    depends_on:
-      db:
-        condition: service_healthy
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 2
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 0
+      SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 15000
 
   web3:
-    build: ./app
+    <<: *web-common
     environment:
       SERVER_ID: SERVER-3
+      JAVA_TOOL_OPTIONS: "-Xms16m -Xmx48m -Xss256k -XX:MaxMetaspaceSize=48m -XX:ReservedCodeCacheSize=16m -XX:+UseSerialGC -XX:ActiveProcessorCount=1 -XX:TieredStopAtLevel=1 -Djava.security.egd=file:/dev/./urandom"
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-    depends_on:
-      db:
-        condition: service_healthy
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 2
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 0
+      SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 15000
 
   web4:
-    build: ./app
+    <<: *web-common
     environment:
-      SERVER_ID: POSHALKA-SERVER-4
+      SERVER_ID: SERVER-4
+      JAVA_TOOL_OPTIONS: "-Xms16m -Xmx48m -Xss256k -XX:MaxMetaspaceSize=48m -XX:ReservedCodeCacheSize=16m -XX:+UseSerialGC -XX:ActiveProcessorCount=1 -XX:TieredStopAtLevel=1 -Djava.security.egd=file:/dev/./urandom"
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-    depends_on:
-      db:
-        condition: service_healthy
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 2
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 0
+      SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 15000
 
   web5:
-    build: ./app
+    <<: *web-common
     environment:
       SERVER_ID: SERVER-5
+      JAVA_TOOL_OPTIONS: "-Xms16m -Xmx48m -Xss256k -XX:MaxMetaspaceSize=48m -XX:ReservedCodeCacheSize=16m -XX:+UseSerialGC -XX:ActiveProcessorCount=1 -XX:TieredStopAtLevel=1 -Djava.security.egd=file:/dev/./urandom"
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-    depends_on:
-      db:
-        condition: service_healthy
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 2
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 0
+      SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 15000
 
   nginx:
     image: nginx:1.27-alpine
+    mem_limit: 24m
+    memswap_limit: 32m
+    pids_limit: 60
     ports:
       - "80:80"
     volumes:
@@ -81,6 +117,7 @@ services:
       - web3
       - web4
       - web5
+    restart: unless-stopped
 
 volumes:
   postgres_data:
